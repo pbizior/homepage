@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wallpaper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    video {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* ── CLOCK ───────────────────────────────────────── */
+    .clock {
+      position: absolute;
+      top: 24px; left: 24px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .row-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(255,200,80,0.5);
+      text-transform: uppercase;
+      width: 30px;
+      text-align: right;
+    }
+
+    .board {
+      background: #0e0e0e;
+      border: 1px solid #282828;
+      border-radius: 5px;
+      padding: 7px 9px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.85),
+                  inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .sep {
+      color: rgba(245,190,50,0.65);
+      font-size: 20px;
+      line-height: 1;
+      margin: 0 1px;
+      text-shadow: 0 0 8px rgba(245,190,50,0.4);
+      user-select: none;
+      align-self: center;
+    }
+
+    canvas { display: block; border-radius: 4px; }
+
+    /* ── SEARCH + SHORTCUTS WRAPPER ──────────────────── */
+    .centre-block {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* ── SEARCH ──────────────────────────────────────── */
+    .search-ring {
+      padding: 3px;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853, #4285F4);
+    }
+
+    .search-box {
+      display: block;
+      width: 420px;
+      padding: 14px 20px;
+      border-radius: 50px;
+      border: none;
+      background: #000;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .search-box::placeholder { color: rgba(255,255,255,0.3); }
+
+    /* ── SHORTCUTS ───────────────────────────────────── */
+    .shortcuts {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shortcut {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      overflow: hidden;
+    }
+
+    .shortcut:hover {
+      transform: translateY(-3px) scale(1.08);
+      background: rgba(20,20,20,0.75);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    .shortcut img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      /* fallback while loading */
+      image-rendering: auto;
+    }
+  </style>
+</head>
+<body>
+
+<video autoplay muted loop playsinline>
+  <source src="file:///Users/biziorp/Downloads/dolphin-wallpaper.mp4" type="video/mp4">
+</video>
+
+<!-- CLOCK -->
+<div class="clock">
+  <div class="row">
+    <span class="row-label">Date</span>
+    <div class="board" id="date-board"></div>
+  </div>
+  <div class="row">
+    <span class="row-label">Time</span>
+    <div class="board" id="time-board"></div>
+  </div>
+</div>
+
+<!-- SEARCH + SHORTCUTS -->
+<div class="centre-block">
+
+  <div class="search-ring">
+    <input class="search-box" id="search" type="text" placeholder="Search Google...">
+  </div>
+
+  <div class="shortcuts">
+    <a class="shortcut" href="https://www.bbc.co.uk/news" title="BBC News">
+      <img src="https://www.bbc.co.uk/favicon.ico" alt="BBC News">
+    </a>
+    <a class="shortcut" href="https://open.spotify.com" title="Spotify">
+      <img src="https://open.spotify.com/favicon.ico" alt="Spotify">
+    </a>
+    <a class="shortcut" href="https://www.dailymail.co.uk" title="Daily Mail">
+      <img src="https://www.dailymail.co.uk/favicon.ico" alt="Daily Mail">
+    </a>
+    <a class="shortcut" href="https://outlook.live.com" title="Outlook">
+      <img src="https://outlook.live.com/favicon.ico" alt="Outlook">
+    </a>
+    <a class="shortcut" href="https://www.theregister.com" title="The Register">
+      <img src="https://www.theregister.com/favicon.ico" alt="The Register">
+    </a>
+  </div>
+
+</div>
+
+<script>
+// ── Config ───────────────────────────────────────────────────────
+const W = 38, H = 56;
+const HALF = H / 2;
+const FONT = `bold 40px 'Share Tech Mono', monospace`;
+const FG      = '#f5c832';
+const BG_DARK = '#191919';
+const BG_MID  = '#212121';
+const ANIM_MS = 260;
+
+document.fonts.ready.then(init);
+
+// ── Draw helpers ─────────────────────────────────────────────────
+function drawFull(ctx, ch, bg) {
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, W, H, 4);
+  ctx.fill();
+
+  ctx.fillStyle = FG;
+  ctx.font = FONT;
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor  = 'rgba(245,200,50,0.45)';
+  ctx.shadowBlur   = 10;
+  ctx.fillText(ch, W / 2, H / 2);
+  ctx.shadowBlur = 0;
+
+  // centre divider
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, HALF - 1, W, 2);
+}
+
+function drawHalf(ctx, ch, half, bg) {
+  ctx.save();
+  ctx.beginPath();
+  if (half === 'top') ctx.rect(0, 0,      W, HALF - 1);
+  else                ctx.rect(0, HALF+1, W, HALF - 1);
+  ctx.clip();
+  drawFull(ctx, ch, bg);
+  ctx.restore();
+}
+
+// ── Flap factory ─────────────────────────────────────────────────
+// Real Solari behaviour:
+//   Phase 1 – top half of OLD digit folds DOWN (rotates about its bottom edge)
+//   Phase 2 – bottom half of NEW digit swings UP from folded position
+//
+// We simulate the perspective squish with a vertical scale transform.
+// "fold down" = the flap starts at full height at top and squishes to 0 at bottom edge
+// "swing up"  = the flap starts at 0 height at top and grows to full height
+
+function makeFlap(initCh) {
+  const canvas = document.createElement('canvas');
+  canvas.width  = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  let current  = initCh;
+  let animating = false;
+  let queued    = null;
+
+  function renderStatic(ch) {
+    ctx.clearRect(0, 0, W, H);
+    drawFull(ctx, ch, BG_DARK);
+  }
+  renderStatic(current);
+
+  function runAnim(from, to) {
+    animating = true;
+    const start = performance.now();
+
+    function frame(ts) {
+      const t = Math.min((ts - start) / ANIM_MS, 1);
+      ctx.clearRect(0, 0, W, H);
+
+      if (t <= 0.5) {
+        // ── Phase 1: top half of FROM folds DOWN ──────────────────
+        // Background: bottom half already shows NEW digit (it's been revealed)
+        drawHalf(ctx, to,   'bot', BG_DARK);   // new bottom – static
+        drawHalf(ctx, from, 'top', BG_DARK);   // old top – will be covered by animated flap
+
+        const p      = t / 0.5;                  // 0 → 1
+        const scaleY = 1 - p;                    // 1 → 0  (flap folds toward hinge at bottom)
+        const flapH  = Math.max(0, (HALF - 1) * scaleY);
+
+        if (flapH > 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(0, HALF - 1 - flapH, W, flapH);   // anchored at HALF, shrinks upward
+          ctx.clip();
+          ctx.save();
+          // scale about the hinge (bottom edge of top half = y:HALF-1)
+          ctx.translate(0, HALF - 1);
+          ctx.scale(1, scaleY);
+          ctx.translate(0, -(HALF - 1));
+          drawFull(ctx, from, BG_MID);
+          ctx.restore();
+          // shadow darkens as it folds
+          ctx.fillStyle = `rgba(0,0,0,${0.5 * p})`;
+          ctx.fillRect(0, HALF - 1 - flapH, W, flapH);
+          ctx.restore();
+        }
+
+      } else {
+        // ── Phase 2: bottom half of TO swings UP ──────────────────
+        drawHalf(ctx, to, 'top', BG_DARK);     // new top – static
+        drawHalf(ctx, to, 'bot', BG_DARK);     // new bottom – will be covered by animated flap
+
+        const p      = (t - 0.5) / 0.5;         // 0 → 1
+        const scaleY = p;                        // 0 → 1  (flap opens from hinge at top)
+        const flapH  = Math.max(0, (HALF - 1) * scaleY);
+
+        if (flapH > 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(0, HALF + 1, W, flapH);       // anchored at HALF, grows downward
+          ctx.clip();
+          ctx.save();
+          // scale about the hinge (top edge of bottom half = y:HALF+1)
+          ctx.translate(0, HALF + 1);
+          ctx.scale(1, scaleY);
+          ctx.translate(0, -(HALF + 1));
+          drawFull(ctx, to, BG_MID);
+          ctx.restore();
+          // shadow fades as it opens
+          ctx.fillStyle = `rgba(0,0,0,${0.4 * (1 - p)})`;
+          ctx.fillRect(0, HALF + 1, W, flapH);
+          ctx.restore();
+        }
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        renderStatic(current);
+        animating = false;
+        if (queued !== null) {
+          const nxt = queued; queued = null;
+          animateTo(nxt);
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function animateTo(next) {
+    if (animating) { queued = next; return; }
+    const prev = current;
+    current = next;
+    runAnim(prev, next);
+  }
+
+  return {
+    el: canvas,
+    set(ch) { if (ch !== current) animateTo(ch); }
+  };
+}
+
+// ── Separator ────────────────────────────────────────────────────
+function makeSep(ch) {
+  const s = document.createElement('span');
+  s.className = 'sep';
+  s.textContent = ch;
+  return s;
+}
+
+// ── Build board ──────────────────────────────────────────────────
+function buildBoard(id, groups, seps) {
+  const board = document.getElementById(id);
+  const flaps = [];
+  groups.forEach((len, gi) => {
+    for (let i = 0; i < len; i++) {
+      const f = makeFlap('0');
+      board.appendChild(f.el);
+      flaps.push(f);
+    }
+    if (gi < groups.length - 1) board.appendChild(makeSep(seps[gi]));
+  });
+  return flaps;
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+function init() {
+  const dateFlaps = buildBoard('date-board', [2, 2, 4], ['/', '/']);
+  const timeFlaps = buildBoard('time-board', [2, 2, 2], [':', ':']);
+
+  function tick() {
+    const n = new Date();
+    const s =
+      String(n.getDate()).padStart(2,'0') +
+      String(n.getMonth()+1).padStart(2,'0') +
+      String(n.getFullYear()) +
+      String(n.getHours()).padStart(2,'0') +
+      String(n.getMinutes()).padStart(2,'0') +
+      String(n.getSeconds()).padStart(2,'0');
+
+    dateFlaps.forEach((f, i) => f.set(s[i]));
+    timeFlaps.forEach((f, i) => f.set(s[8 + i]));
+  }
+
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ── Search ───────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const q = encodeURIComponent(this.value);
+    if (q) window.location.href = `https://www.google.com/search?q=${q}`;
+  }
+});
+</script>
+</body>
+</html>
