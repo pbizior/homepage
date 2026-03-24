@@ -14,12 +14,39 @@
       font-family: 'Share Tech Mono', monospace;
     }
 
-    video {
+    #video {
       position: fixed;
       inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
       z-index: 0;
+    }
+
+        /* ── YOUTUBE BACKGROUND ──────────────────────────── */
+    yt-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: #000;
+    }
+    /* The iframe must be much larger than the viewport so we can
+       centre-crop it and hide the YouTube UI chrome completely    */
+    yt-bg iframe {
+      position: absolute;
+      /* Sit above the controls bar and below the top bar */
+      top: 50%; left: 50%;
+      /* 16:9 — make sure it always covers the viewport.
+         We overshoot by ~20% on each side to hide UI edges. */
+      width: calc(100vw + 400px);
+      height: calc((100vw + 400px) * 9 / 16);
+      min-width: calc((100vh + 300px) * 16 / 9);
+      min-height: calc(100vh + 300px);
+      transform: translate(-50%, -50%);
+      border: none;
+      /* Pointer events off so clicks pass through to widgets */
+      pointer-events: none;
     }
 
     /* ── CLOCK ───────────────────────────────────────── */
