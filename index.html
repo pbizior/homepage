@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Wallpaper</title>
+  <script src="https://www.youtube.com/iframe_api"></script>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,38 +15,29 @@
       font-family: 'Share Tech Mono', monospace;
     }
 
-    #video {
-      position: fixed;
-      inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: 0;
-    }
-
-        /* ── YOUTUBE BACKGROUND ──────────────────────────── */
-    yt-bg {
+    /* ── YOUTUBE BACKGROUND ──────────────────────────── */
+    #yt-bg {
       position: fixed;
       inset: 0;
       z-index: 0;
-      pointer-events: none;
       overflow: hidden;
       background: #000;
+      pointer-events: none;
     }
-    /* The iframe must be much larger than the viewport so we can
-       centre-crop it and hide the YouTube UI chrome completely    */
-    yt-bg iframe {
+
+    /* The div that YT API injects its iframe into */
+    #yt-player,
+    #yt-bg iframe {
       position: absolute;
-      /* Sit above the controls bar and below the top bar */
-      top: 50%; left: 50%;
-      /* 16:9 — make sure it always covers the viewport.
-         We overshoot by ~20% on each side to hide UI edges. */
-      width: calc(100vw + 400px);
-      height: calc((100vw + 400px) * 9 / 16);
-      min-width: calc((100vh + 300px) * 16 / 9);
-      min-height: calc(100vh + 300px);
+      top: 50%;
+      left: 50%;
+      /* Oversized to crop out all YouTube UI chrome on every side */
+      width:      calc(100vw + 480px);
+      height:     calc((100vw + 480px) * 9 / 16);
+      min-width:  calc((100vh + 360px) * 16 / 9);
+      min-height: calc(100vh + 360px);
       transform: translate(-50%, -50%);
       border: none;
-      /* Pointer events off so clicks pass through to widgets */
       pointer-events: none;
     }
 
@@ -59,11 +51,7 @@
       gap: 10px;
     }
 
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .row { display: flex; align-items: center; gap: 8px; }
 
     .row-label {
       font-size: 9px;
@@ -98,7 +86,7 @@
 
     canvas { display: block; border-radius: 4px; }
 
-    /* ── SEARCH + SHORTCUTS WRAPPER ──────────────────── */
+    /* ── CENTRE BLOCK ────────────────────────────────── */
     .centre-block {
       position: absolute;
       top: 50%; left: 50%;
@@ -115,6 +103,10 @@
       padding: 3px;
       border-radius: 50px;
       background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853, #4285F4);
+      box-shadow:
+        0 0 18px 4px rgba(66,133,244,0.4),
+        0 0 36px 8px rgba(234,67,53,0.2),
+        0 0 50px 12px rgba(52,168,83,0.15);
     }
 
     .search-box {
@@ -145,8 +137,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 48px;
-      height: 48px;
+      width: 48px; height: 48px;
       border-radius: 14px;
       background: rgba(0,0,0,0.55);
       backdrop-filter: blur(12px);
@@ -164,43 +155,16 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
 
-    .shortcut img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      /* fallback while loading */
-      image-rendering: auto;
-    }
+    .shortcut img { width: 28px; height: 28px; object-fit: contain; }
   </style>
 </head>
 <body>
 
-<video autoplay muted loop playsinline>
-  <source src="file:///Users/biziorp/Downloads/dolphin-wallpaper.mp4" type="video/mp4">
-</video>
-
-<!-- CLOCK -->
-<div class="clock">
-  <div class="row">
-    <span class="row-label">Date</span>
-    <div class="board" id="date-board"></div>
-  </div>
-  <div class="row">
-    <span class="row-label">Time</span>
-    <div class="board" id="time-board"></div>
-  </div>
-</div>
-
 <!-- YOUTUBE BACKGROUND -->
 <div id="yt-bg">
-  <iframe
-    id="yt-iframe"
-    src="https://www.youtube.com/embed/0vYb9TcUo0Q?list=PLmYIs0msnlgfzSiDcyygk-gbUacTs31Ng&autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1"
-    allow="autoplay; encrypted-media"
-    allowfullscreen>
-  </iframe>
+  <div id="yt-player"></div>
 </div>
- 
+
 <!-- CLOCK -->
 <div class="clock">
   <div class="row">
@@ -215,11 +179,9 @@
 
 <!-- SEARCH + SHORTCUTS -->
 <div class="centre-block">
-
   <div class="search-ring">
     <input class="search-box" id="search" type="text" placeholder="Search Google...">
   </div>
-
   <div class="shortcuts">
     <a class="shortcut" href="https://www.bbc.co.uk/news" title="BBC News">
       <img src="https://www.bbc.co.uk/favicon.ico" alt="BBC News">
@@ -237,22 +199,66 @@
       <img src="https://www.theregister.com/favicon.ico" alt="The Register">
     </a>
   </div>
-
 </div>
 
 <script>
-// ── Config ───────────────────────────────────────────────────────
-const W = 38, H = 56;
-const HALF = H / 2;
-const FONT = `bold 40px 'Share Tech Mono', monospace`;
+// ════════════════════════════════════════════════════════
+//  YOUTUBE BACKGROUND
+// ════════════════════════════════════════════════════════
+var ytPlayer;
+
+window.onYouTubeIframeAPIReady = function () {
+  ytPlayer = new YT.Player('yt-player', {
+    videoId: '0vYb9TcUo0Q',
+    playerVars: {
+      listType:       'playlist',
+      list:           'PLmYIs0msnlgfzSiDcyygk-gbUacTs31Ng',
+      autoplay:       1,
+      mute:           1,
+      controls:       0,
+      disablekb:      1,
+      fs:             0,
+      iv_load_policy: 3,
+      modestbranding: 1,
+      rel:            0,
+      showinfo:       0,
+      playsinline:    1,
+      loop:           1,
+    },
+    events: {
+      onReady: function (e) {
+        e.target.mute();
+        e.target.playVideo();
+      },
+      onStateChange: function (e) {
+        // Restart if it somehow stops
+        if (e.data === YT.PlayerState.ENDED) {
+          e.target.playVideo();
+        }
+        // If browser blocked autoplay, resume on first user click
+        if (e.data === YT.PlayerState.PAUSED) {
+          document.addEventListener('click', function resume() {
+            ytPlayer && ytPlayer.playVideo();
+            document.removeEventListener('click', resume);
+          }, { once: true });
+        }
+      }
+    }
+  });
+};
+
+// ════════════════════════════════════════════════════════
+//  FLIP CLOCK
+// ════════════════════════════════════════════════════════
+const W = 38, H = 56, HALF = H / 2;
+const FONT    = `bold 40px 'Share Tech Mono', monospace`;
 const FG      = '#f5c832';
 const BG_DARK = '#191919';
 const BG_MID  = '#212121';
 const ANIM_MS = 260;
 
-document.fonts.ready.then(init);
+document.fonts.ready.then(initClock);
 
-// ── Draw helpers ─────────────────────────────────────────────────
 function drawFull(ctx, ch, bg) {
   ctx.fillStyle = bg;
   ctx.beginPath();
@@ -266,9 +272,8 @@ function drawFull(ctx, ch, bg) {
   ctx.shadowColor  = 'rgba(245,200,50,0.45)';
   ctx.shadowBlur   = 10;
   ctx.fillText(ch, W / 2, H / 2);
-  ctx.shadowBlur = 0;
+  ctx.shadowBlur   = 0;
 
-  // centre divider
   ctx.fillStyle = '#000';
   ctx.fillRect(0, HALF - 1, W, 2);
 }
@@ -276,21 +281,12 @@ function drawFull(ctx, ch, bg) {
 function drawHalf(ctx, ch, half, bg) {
   ctx.save();
   ctx.beginPath();
-  if (half === 'top') ctx.rect(0, 0,      W, HALF - 1);
-  else                ctx.rect(0, HALF+1, W, HALF - 1);
+  if (half === 'top') ctx.rect(0, 0,        W, HALF - 1);
+  else                ctx.rect(0, HALF + 1, W, HALF - 1);
   ctx.clip();
   drawFull(ctx, ch, bg);
   ctx.restore();
 }
-
-// ── Flap factory ─────────────────────────────────────────────────
-// Real Solari behaviour:
-//   Phase 1 – top half of OLD digit folds DOWN (rotates about its bottom edge)
-//   Phase 2 – bottom half of NEW digit swings UP from folded position
-//
-// We simulate the perspective squish with a vertical scale transform.
-// "fold down" = the flap starts at full height at top and squishes to 0 at bottom edge
-// "swing up"  = the flap starts at 0 height at top and grows to full height
 
 function makeFlap(initCh) {
   const canvas = document.createElement('canvas');
@@ -301,7 +297,7 @@ function makeFlap(initCh) {
   const ctx = canvas.getContext('2d');
   ctx.scale(devicePixelRatio, devicePixelRatio);
 
-  let current  = initCh;
+  let current   = initCh;
   let animating = false;
   let queued    = null;
 
@@ -320,55 +316,50 @@ function makeFlap(initCh) {
       ctx.clearRect(0, 0, W, H);
 
       if (t <= 0.5) {
-        // ── Phase 1: top half of FROM folds DOWN ──────────────────
-        // Background: bottom half already shows NEW digit (it's been revealed)
-        drawHalf(ctx, to,   'bot', BG_DARK);   // new bottom – static
-        drawHalf(ctx, from, 'top', BG_DARK);   // old top – will be covered by animated flap
+        // Phase 1: top half of OLD digit folds DOWN
+        drawHalf(ctx, to,   'bot', BG_DARK);
+        drawHalf(ctx, from, 'top', BG_DARK);
 
-        const p      = t / 0.5;                  // 0 → 1
-        const scaleY = 1 - p;                    // 1 → 0  (flap folds toward hinge at bottom)
+        const p      = t / 0.5;
+        const scaleY = 1 - p;
         const flapH  = Math.max(0, (HALF - 1) * scaleY);
 
         if (flapH > 0) {
           ctx.save();
           ctx.beginPath();
-          ctx.rect(0, HALF - 1 - flapH, W, flapH);   // anchored at HALF, shrinks upward
+          ctx.rect(0, HALF - 1 - flapH, W, flapH);
           ctx.clip();
           ctx.save();
-          // scale about the hinge (bottom edge of top half = y:HALF-1)
           ctx.translate(0, HALF - 1);
           ctx.scale(1, scaleY);
           ctx.translate(0, -(HALF - 1));
           drawFull(ctx, from, BG_MID);
           ctx.restore();
-          // shadow darkens as it folds
           ctx.fillStyle = `rgba(0,0,0,${0.5 * p})`;
           ctx.fillRect(0, HALF - 1 - flapH, W, flapH);
           ctx.restore();
         }
 
       } else {
-        // ── Phase 2: bottom half of TO swings UP ──────────────────
-        drawHalf(ctx, to, 'top', BG_DARK);     // new top – static
-        drawHalf(ctx, to, 'bot', BG_DARK);     // new bottom – will be covered by animated flap
+        // Phase 2: bottom half of NEW digit swings DOWN into place
+        drawHalf(ctx, to, 'top', BG_DARK);
+        drawHalf(ctx, to, 'bot', BG_DARK);
 
-        const p      = (t - 0.5) / 0.5;         // 0 → 1
-        const scaleY = p;                        // 0 → 1  (flap opens from hinge at top)
+        const p      = (t - 0.5) / 0.5;
+        const scaleY = p;
         const flapH  = Math.max(0, (HALF - 1) * scaleY);
 
         if (flapH > 0) {
           ctx.save();
           ctx.beginPath();
-          ctx.rect(0, HALF + 1, W, flapH);       // anchored at HALF, grows downward
+          ctx.rect(0, HALF + 1, W, flapH);
           ctx.clip();
           ctx.save();
-          // scale about the hinge (top edge of bottom half = y:HALF+1)
           ctx.translate(0, HALF + 1);
           ctx.scale(1, scaleY);
           ctx.translate(0, -(HALF + 1));
           drawFull(ctx, to, BG_MID);
           ctx.restore();
-          // shadow fades as it opens
           ctx.fillStyle = `rgba(0,0,0,${0.4 * (1 - p)})`;
           ctx.fillRect(0, HALF + 1, W, flapH);
           ctx.restore();
@@ -402,7 +393,6 @@ function makeFlap(initCh) {
   };
 }
 
-// ── Separator ────────────────────────────────────────────────────
 function makeSep(ch) {
   const s = document.createElement('span');
   s.className = 'sep';
@@ -410,7 +400,6 @@ function makeSep(ch) {
   return s;
 }
 
-// ── Build board ──────────────────────────────────────────────────
 function buildBoard(id, groups, seps) {
   const board = document.getElementById(id);
   const flaps = [];
@@ -425,31 +414,28 @@ function buildBoard(id, groups, seps) {
   return flaps;
 }
 
-// ── Init ─────────────────────────────────────────────────────────
-function init() {
-  const dateFlaps = buildBoard('date-board', [2, 2, 4], ['/', '/']);
-  const timeFlaps = buildBoard('time-board', [2, 2, 2], [':', ':']);
+function initClock() {
+  const df = buildBoard('date-board', [2, 2, 4], ['/', '/']);
+  const tf = buildBoard('time-board', [2, 2, 2], [':', ':']);
 
   function tick() {
     const n = new Date();
     const s =
-      String(n.getDate()).padStart(2,'0') +
-      String(n.getMonth()+1).padStart(2,'0') +
+      String(n.getDate()).padStart(2, '0') +
+      String(n.getMonth() + 1).padStart(2, '0') +
       String(n.getFullYear()) +
-      String(n.getHours()).padStart(2,'0') +
-      String(n.getMinutes()).padStart(2,'0') +
-      String(n.getSeconds()).padStart(2,'0');
-
-    dateFlaps.forEach((f, i) => f.set(s[i]));
-    timeFlaps.forEach((f, i) => f.set(s[8 + i]));
+      String(n.getHours()).padStart(2, '0') +
+      String(n.getMinutes()).padStart(2, '0') +
+      String(n.getSeconds()).padStart(2, '0');
+    df.forEach((f, i) => f.set(s[i]));
+    tf.forEach((f, i) => f.set(s[8 + i]));
   }
-
   tick();
   setInterval(tick, 1000);
 }
 
 // ── Search ───────────────────────────────────────────────────────
-document.getElementById('search').addEventListener('keydown', function(e) {
+document.getElementById('search').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') {
     const q = encodeURIComponent(this.value);
     if (q) window.location.href = `https://www.google.com/search?q=${q}`;
