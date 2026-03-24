@@ -28,17 +28,17 @@
     /* The div that YT API injects its iframe into */
     #yt-player,
     #yt-bg iframe {
-      position: absolute;
-      top: 50%;
-      left: 50%;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
       /* Oversized to crop out all YouTube UI chrome on every side */
-      width:      calc(100vw + 480px);
-      height:     calc((100vw + 480px) * 9 / 16);
-      min-width:  calc((100vh + 360px) * 16 / 9);
-      min-height: calc(100vh + 360px);
-      transform: translate(-50%, -50%);
-      border: none;
-      pointer-events: none;
+      width:      calc(100vw + 480px) !important;
+      height:     calc((100vw + 480px) * 9 / 16) !important;
+      min-width:  calc((100vh + 360px) * 16 / 9) !important;
+      min-height: calc(100vh + 360px) !important;
+      transform: translate(-50%, -50%) !important;
+      border: none !important;
+      pointer-events: none !important;
     }
 
     /* ── CLOCK ───────────────────────────────────────── */
@@ -210,6 +210,9 @@ var ytPlayer;
 window.onYouTubeIframeAPIReady = function () {
   ytPlayer = new YT.Player('yt-player', {
     videoId: '0vYb9TcUo0Q',
+    // Tell the API to make the element large — CSS will then override further
+    width:  '100%',
+    height: '100%',
     playerVars: {
       listType:       'playlist',
       list:           'PLmYIs0msnlgfzSiDcyygk-gbUacTs31Ng',
@@ -229,13 +232,11 @@ window.onYouTubeIframeAPIReady = function () {
       onReady: function (e) {
         e.target.mute();
         e.target.playVideo();
+        // Force the injected iframe to fill the oversized container
+        fixYTSize();
       },
       onStateChange: function (e) {
-        // Restart if it somehow stops
-        if (e.data === YT.PlayerState.ENDED) {
-          e.target.playVideo();
-        }
-        // If browser blocked autoplay, resume on first user click
+        if (e.data === YT.PlayerState.ENDED) e.target.playVideo();
         if (e.data === YT.PlayerState.PAUSED) {
           document.addEventListener('click', function resume() {
             ytPlayer && ytPlayer.playVideo();
@@ -246,6 +247,22 @@ window.onYouTubeIframeAPIReady = function () {
     }
   });
 };
+
+function fixYTSize() {
+  // The API injects inline width/height onto the iframe — strip them so CSS takes over
+  const iframe = document.querySelector('#yt-bg iframe');
+  if (iframe) {
+    iframe.removeAttribute('width');
+    iframe.removeAttribute('height');
+    iframe.style.cssText = ''; // clear any inline styles the API added
+  }
+  // Also clear any inline styles on the #yt-player div
+  const player = document.getElementById('yt-player');
+  if (player) player.style.cssText = '';
+}
+
+// Run on resize too so it stays full-cover if window is resized
+window.addEventListener('resize', fixYTSize);
 
 // ════════════════════════════════════════════════════════
 //  FLIP CLOCK
