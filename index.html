@@ -25,13 +25,11 @@
       pointer-events: none;
     }
 
-    /* The div that YT API injects its iframe into */
     #yt-player,
     #yt-bg iframe {
       position: absolute !important;
       top: 50% !important;
       left: 50% !important;
-      /* Oversized to crop out all YouTube UI chrome on every side */
       width:      calc(100vw + 480px) !important;
       height:     calc((100vw + 480px) * 9 / 16) !important;
       min-width:  calc((100vh + 360px) * 16 / 9) !important;
@@ -50,40 +48,22 @@
       flex-direction: column;
       gap: 10px;
     }
-
     .row { display: flex; align-items: center; gap: 8px; }
-
     .row-label {
-      font-size: 9px;
-      letter-spacing: 2px;
+      font-size: 9px; letter-spacing: 2px;
       color: rgba(255,200,80,0.5);
-      text-transform: uppercase;
-      width: 30px;
-      text-align: right;
+      text-transform: uppercase; width: 30px; text-align: right;
     }
-
     .board {
-      background: #0e0e0e;
-      border: 1px solid #282828;
-      border-radius: 5px;
-      padding: 7px 9px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.85),
-                  inset 0 1px 0 rgba(255,255,255,0.03);
+      background: #0e0e0e; border: 1px solid #282828; border-radius: 5px;
+      padding: 7px 9px; display: flex; align-items: center; gap: 5px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.03);
     }
-
     .sep {
-      color: rgba(245,190,50,0.65);
-      font-size: 20px;
-      line-height: 1;
-      margin: 0 1px;
-      text-shadow: 0 0 8px rgba(245,190,50,0.4);
-      user-select: none;
-      align-self: center;
+      color: rgba(245,190,50,0.65); font-size: 20px; line-height: 1;
+      margin: 0 1px; text-shadow: 0 0 8px rgba(245,190,50,0.4);
+      user-select: none; align-self: center;
     }
-
     canvas { display: block; border-radius: 4px; }
 
     /* ── CENTRE BLOCK ────────────────────────────────── */
@@ -92,70 +72,151 @@
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
     }
 
     /* ── SEARCH ──────────────────────────────────────── */
     .search-ring {
-      padding: 3px;
-      border-radius: 50px;
+      padding: 3px; border-radius: 50px;
       background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853, #4285F4);
       box-shadow:
         0 0 18px 4px rgba(66,133,244,0.4),
         0 0 36px 8px rgba(234,67,53,0.2),
         0 0 50px 12px rgba(52,168,83,0.15);
     }
-
     .search-box {
-      display: block;
-      width: 420px;
-      padding: 14px 20px;
-      border-radius: 50px;
-      border: none;
-      background: #000;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-      text-align: center;
+      display: block; width: 420px; padding: 14px 20px;
+      border-radius: 50px; border: none; background: #000; color: #fff;
+      font-size: 16px; outline: none; text-align: center;
       font-family: 'Share Tech Mono', monospace;
     }
-
     .search-box::placeholder { color: rgba(255,255,255,0.3); }
 
     /* ── SHORTCUTS ───────────────────────────────────── */
-    .shortcuts {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      justify-content: center;
-    }
-
+    .shortcuts { display: flex; gap: 16px; align-items: center; justify-content: center; }
     .shortcut {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px; height: 48px;
-      border-radius: 14px;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-      cursor: pointer;
-      text-decoration: none;
+      cursor: pointer; text-decoration: none;
       transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
       overflow: hidden;
     }
-
     .shortcut:hover {
       transform: translateY(-3px) scale(1.08);
       background: rgba(20,20,20,0.75);
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
-
     .shortcut img { width: 28px; height: 28px; object-fit: contain; }
+
+    /* ── COG BUTTON ──────────────────────────────────── */
+    #cog-btn {
+      position: fixed;
+      top: 18px; right: 18px;
+      z-index: 100;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.4s;
+      color: rgba(255,255,255,0.6);
+    }
+    #cog-btn:hover {
+      background: rgba(30,30,30,0.8);
+      color: #fff;
+      transform: rotate(60deg);
+    }
+
+    /* ── SETTINGS PANEL ──────────────────────────────── */
+    #settings-panel {
+      position: fixed;
+      top: 64px; right: 18px;
+      z-index: 99;
+      width: 320px;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.8);
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      /* slide in from top-right */
+      transform-origin: top right;
+    }
+    #settings-panel.open {
+      display: flex;
+      animation: panelIn 0.2s ease;
+    }
+    @keyframes panelIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .setting-label {
+      font-size: 9px; letter-spacing: 2px;
+      color: rgba(255,255,255,0.35); text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .setting-row { display: flex; flex-direction: column; gap: 6px; }
+
+    .url-input-wrap {
+      display: flex; gap: 8px; align-items: stretch;
+    }
+
+    #yt-url-input {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      outline: none;
+    }
+    #yt-url-input::placeholder { color: rgba(255,255,255,0.2); }
+    #yt-url-input:focus { border-color: rgba(255,255,255,0.25); }
+
+    #yt-url-save {
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #1DB954;
+      color: #000;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: filter 0.15s;
+    }
+    #yt-url-save:hover { filter: brightness(1.15); }
+
+    .setting-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .setting-info {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      line-height: 1.5;
+    }
+
+    #save-status {
+      font-size: 10px;
+      color: #1DB954;
+      min-height: 14px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -201,42 +262,134 @@
   </div>
 </div>
 
+<!-- COG BUTTON -->
+<button id="cog-btn" title="Settings">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.02 7.02 0 0 0-1.62-.94l-.36-2.54A.48.48 0 0 0 14 2h-4a.48.48 0 0 0-.48.41l-.36 2.54a7.02 7.02 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.64 8.47a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.27.41.49.41h4c.22 0 .44-.17.47-.41l.36-2.54a7.02 7.02 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/>
+  </svg>
+</button>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-panel">
+  <div class="setting-row">
+    <div class="setting-label">Background Video</div>
+    <div class="url-input-wrap">
+      <input id="yt-url-input" type="text" placeholder="Paste YouTube URL or video ID…">
+      <button id="yt-url-save">Apply</button>
+    </div>
+    <div id="save-status"></div>
+  </div>
+  <hr class="setting-divider">
+  <div class="setting-info">
+    Paste any YouTube URL — video, playlist, or just a video ID.<br>
+    Videos start 2 minutes in and loop. Your choice is saved.
+  </div>
+</div>
+
 <script>
+// ════════════════════════════════════════════════════════
+//  HELPERS — parse YouTube URL → { videoId, listId }
+// ════════════════════════════════════════════════════════
+function parseYTUrl(input) {
+  input = input.trim();
+  let videoId = null, listId = null;
+
+  try {
+    // Handle plain video IDs (11 chars, no slashes)
+    if (/^[A-Za-z0-9_-]{11}$/.test(input)) {
+      return { videoId: input, listId: null };
+    }
+
+    const url = new URL(input.includes('://') ? input : 'https://' + input);
+    const p   = url.searchParams;
+
+    // youtube.com/watch?v=...
+    if (p.get('v')) videoId = p.get('v');
+    // youtu.be/VIDEO_ID
+    if (url.hostname === 'youtu.be') videoId = url.pathname.slice(1).split('?')[0];
+    // youtube.com/embed/VIDEO_ID
+    if (url.pathname.startsWith('/embed/')) videoId = url.pathname.split('/')[2];
+
+    if (p.get('list')) listId = p.get('list');
+  } catch (_) {}
+
+  return { videoId, listId };
+}
+
+// ════════════════════════════════════════════════════════
+//  STATE — load saved video from localStorage
+// ════════════════════════════════════════════════════════
+const DEFAULT_VIDEO = '0vYb9TcUo0Q';
+const DEFAULT_LIST  = 'PLmYIs0msnlgfzSiDcyygk-gbUacTs31Ng';
+const START_SECONDS = 120; // 2 minutes in
+
+function loadSaved() {
+  const saved = localStorage.getItem('wp_yt_url');
+  if (saved) {
+    const p = parseYTUrl(saved);
+    return { videoId: p.videoId || DEFAULT_VIDEO, listId: p.listId };
+  }
+  return { videoId: DEFAULT_VIDEO, listId: DEFAULT_LIST };
+}
+
+var currentVideo = loadSaved();
+var ytPlayer;
+
 // ════════════════════════════════════════════════════════
 //  YOUTUBE BACKGROUND
 // ════════════════════════════════════════════════════════
-var ytPlayer;
-
 window.onYouTubeIframeAPIReady = function () {
+  buildPlayer(currentVideo.videoId, currentVideo.listId);
+};
+
+function buildPlayer(videoId, listId) {
+  // Destroy existing player if any
+  if (ytPlayer && ytPlayer.destroy) {
+    ytPlayer.destroy();
+    // Re-create the target div (destroy removes it)
+    const bg = document.getElementById('yt-bg');
+    const div = document.createElement('div');
+    div.id = 'yt-player';
+    bg.appendChild(div);
+  }
+
+  const vars = {
+    autoplay:       1,
+    mute:           1,
+    controls:       0,
+    disablekb:      1,
+    fs:             0,
+    iv_load_policy: 3,
+    modestbranding: 1,
+    rel:            0,
+    showinfo:       0,
+    playsinline:    1,
+    loop:           1,
+    start:          START_SECONDS,
+  };
+
+  if (listId) {
+    vars.listType = 'playlist';
+    vars.list     = listId;
+  }
+
   ytPlayer = new YT.Player('yt-player', {
-    videoId: '0vYb9TcUo0Q',
-    // Tell the API to make the element large — CSS will then override further
-    width:  '100%',
-    height: '100%',
-    playerVars: {
-      listType:       'playlist',
-      list:           'PLmYIs0msnlgfzSiDcyygk-gbUacTs31Ng',
-      autoplay:       1,
-      mute:           1,
-      controls:       0,
-      disablekb:      1,
-      fs:             0,
-      iv_load_policy: 3,
-      modestbranding: 1,
-      rel:            0,
-      showinfo:       0,
-      playsinline:    1,
-      loop:           1,
-    },
+    videoId: videoId,
+    width:   '100%',
+    height:  '100%',
+    playerVars: vars,
     events: {
       onReady: function (e) {
         e.target.mute();
+        e.target.seekTo(START_SECONDS, true);
         e.target.playVideo();
-        // Force the injected iframe to fill the oversized container
         fixYTSize();
       },
       onStateChange: function (e) {
-        if (e.data === YT.PlayerState.ENDED) e.target.playVideo();
+        if (e.data === YT.PlayerState.ENDED) {
+          e.target.seekTo(START_SECONDS, true);
+          e.target.playVideo();
+        }
         if (e.data === YT.PlayerState.PAUSED) {
           document.addEventListener('click', function resume() {
             ytPlayer && ytPlayer.playVideo();
@@ -246,23 +399,80 @@ window.onYouTubeIframeAPIReady = function () {
       }
     }
   });
-};
+}
 
 function fixYTSize() {
-  // The API injects inline width/height onto the iframe — strip them so CSS takes over
   const iframe = document.querySelector('#yt-bg iframe');
   if (iframe) {
     iframe.removeAttribute('width');
     iframe.removeAttribute('height');
-    iframe.style.cssText = ''; // clear any inline styles the API added
+    iframe.style.cssText = '';
   }
-  // Also clear any inline styles on the #yt-player div
-  const player = document.getElementById('yt-player');
-  if (player) player.style.cssText = '';
+  const p = document.getElementById('yt-player');
+  if (p) p.style.cssText = '';
+}
+window.addEventListener('resize', fixYTSize);
+
+// ════════════════════════════════════════════════════════
+//  COG / SETTINGS PANEL
+// ════════════════════════════════════════════════════════
+const cogBtn   = document.getElementById('cog-btn');
+const panel    = document.getElementById('settings-panel');
+const urlInput = document.getElementById('yt-url-input');
+const saveBtn  = document.getElementById('yt-url-save');
+const status   = document.getElementById('save-status');
+
+// Pre-fill with saved URL
+urlInput.value = localStorage.getItem('wp_yt_url') || '';
+
+cogBtn.addEventListener('click', function (e) {
+  e.stopPropagation();
+  panel.classList.toggle('open');
+});
+
+// Close panel when clicking outside
+document.addEventListener('click', function (e) {
+  if (!panel.contains(e.target) && e.target !== cogBtn) {
+    panel.classList.remove('open');
+  }
+});
+
+// Prevent panel clicks from closing it
+panel.addEventListener('click', function (e) { e.stopPropagation(); });
+
+saveBtn.addEventListener('click', applyVideo);
+urlInput.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') applyVideo();
+});
+
+function applyVideo() {
+  const raw = urlInput.value.trim();
+  if (!raw) { flashStatus('Paste a YouTube URL first', '#ff6b6b'); return; }
+
+  const { videoId, listId } = parseYTUrl(raw);
+  if (!videoId) { flashStatus('Could not find a video ID', '#ff6b6b'); return; }
+
+  // Save to localStorage
+  localStorage.setItem('wp_yt_url', raw);
+  currentVideo = { videoId, listId };
+
+  // Swap the player
+  if (window.YT && window.YT.Player) {
+    buildPlayer(videoId, listId);
+    flashStatus('✓ Saved & loading…', '#1DB954');
+  } else {
+    flashStatus('✓ Saved — reload to apply', '#1DB954');
+  }
+
+  // Close panel after a moment
+  setTimeout(() => panel.classList.remove('open'), 1200);
 }
 
-// Run on resize too so it stays full-cover if window is resized
-window.addEventListener('resize', fixYTSize);
+function flashStatus(msg, colour) {
+  status.textContent = msg;
+  status.style.color = colour;
+  setTimeout(() => status.textContent = '', 3000);
+}
 
 // ════════════════════════════════════════════════════════
 //  FLIP CLOCK
@@ -278,181 +488,104 @@ document.fonts.ready.then(initClock);
 
 function drawFull(ctx, ch, bg) {
   ctx.fillStyle = bg;
-  ctx.beginPath();
-  ctx.roundRect(0, 0, W, H, 4);
-  ctx.fill();
-
-  ctx.fillStyle = FG;
-  ctx.font = FONT;
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.shadowColor  = 'rgba(245,200,50,0.45)';
-  ctx.shadowBlur   = 10;
-  ctx.fillText(ch, W / 2, H / 2);
-  ctx.shadowBlur   = 0;
-
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, HALF - 1, W, 2);
+  ctx.beginPath(); ctx.roundRect(0, 0, W, H, 4); ctx.fill();
+  ctx.fillStyle = FG; ctx.font = FONT;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(245,200,50,0.45)'; ctx.shadowBlur = 10;
+  ctx.fillText(ch, W / 2, H / 2); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#000'; ctx.fillRect(0, HALF - 1, W, 2);
 }
 
 function drawHalf(ctx, ch, half, bg) {
-  ctx.save();
-  ctx.beginPath();
+  ctx.save(); ctx.beginPath();
   if (half === 'top') ctx.rect(0, 0,        W, HALF - 1);
   else                ctx.rect(0, HALF + 1, W, HALF - 1);
-  ctx.clip();
-  drawFull(ctx, ch, bg);
-  ctx.restore();
+  ctx.clip(); drawFull(ctx, ch, bg); ctx.restore();
 }
 
 function makeFlap(initCh) {
   const canvas = document.createElement('canvas');
-  canvas.width  = W * devicePixelRatio;
-  canvas.height = H * devicePixelRatio;
-  canvas.style.width  = W + 'px';
-  canvas.style.height = H + 'px';
+  canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
   const ctx = canvas.getContext('2d');
   ctx.scale(devicePixelRatio, devicePixelRatio);
+  let current = initCh, animating = false, queued = null;
 
-  let current   = initCh;
-  let animating = false;
-  let queued    = null;
-
-  function renderStatic(ch) {
-    ctx.clearRect(0, 0, W, H);
-    drawFull(ctx, ch, BG_DARK);
-  }
+  function renderStatic(ch) { ctx.clearRect(0,0,W,H); drawFull(ctx,ch,BG_DARK); }
   renderStatic(current);
 
   function runAnim(from, to) {
     animating = true;
     const start = performance.now();
-
     function frame(ts) {
       const t = Math.min((ts - start) / ANIM_MS, 1);
       ctx.clearRect(0, 0, W, H);
-
       if (t <= 0.5) {
-        // Phase 1: top half of OLD digit folds DOWN
         drawHalf(ctx, to,   'bot', BG_DARK);
         drawHalf(ctx, from, 'top', BG_DARK);
-
-        const p      = t / 0.5;
-        const scaleY = 1 - p;
-        const flapH  = Math.max(0, (HALF - 1) * scaleY);
-
+        const p = t/0.5, scaleY = 1-p, flapH = Math.max(0,(HALF-1)*scaleY);
         if (flapH > 0) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(0, HALF - 1 - flapH, W, flapH);
-          ctx.clip();
-          ctx.save();
-          ctx.translate(0, HALF - 1);
-          ctx.scale(1, scaleY);
-          ctx.translate(0, -(HALF - 1));
-          drawFull(ctx, from, BG_MID);
-          ctx.restore();
-          ctx.fillStyle = `rgba(0,0,0,${0.5 * p})`;
-          ctx.fillRect(0, HALF - 1 - flapH, W, flapH);
+          ctx.save(); ctx.beginPath(); ctx.rect(0,HALF-1-flapH,W,flapH); ctx.clip();
+          ctx.save(); ctx.translate(0,HALF-1); ctx.scale(1,scaleY); ctx.translate(0,-(HALF-1));
+          drawFull(ctx,from,BG_MID); ctx.restore();
+          ctx.fillStyle=`rgba(0,0,0,${0.5*p})`; ctx.fillRect(0,HALF-1-flapH,W,flapH);
           ctx.restore();
         }
-
       } else {
-        // Phase 2: bottom half of NEW digit swings DOWN into place
         drawHalf(ctx, to, 'top', BG_DARK);
         drawHalf(ctx, to, 'bot', BG_DARK);
-
-        const p      = (t - 0.5) / 0.5;
-        const scaleY = p;
-        const flapH  = Math.max(0, (HALF - 1) * scaleY);
-
+        const p=(t-0.5)/0.5, scaleY=p, flapH=Math.max(0,(HALF-1)*scaleY);
         if (flapH > 0) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(0, HALF + 1, W, flapH);
-          ctx.clip();
-          ctx.save();
-          ctx.translate(0, HALF + 1);
-          ctx.scale(1, scaleY);
-          ctx.translate(0, -(HALF + 1));
-          drawFull(ctx, to, BG_MID);
-          ctx.restore();
-          ctx.fillStyle = `rgba(0,0,0,${0.4 * (1 - p)})`;
-          ctx.fillRect(0, HALF + 1, W, flapH);
+          ctx.save(); ctx.beginPath(); ctx.rect(0,HALF+1,W,flapH); ctx.clip();
+          ctx.save(); ctx.translate(0,HALF+1); ctx.scale(1,scaleY); ctx.translate(0,-(HALF+1));
+          drawFull(ctx,to,BG_MID); ctx.restore();
+          ctx.fillStyle=`rgba(0,0,0,${0.4*(1-p)})`; ctx.fillRect(0,HALF+1,W,flapH);
           ctx.restore();
         }
       }
-
-      if (t < 1) {
-        requestAnimationFrame(frame);
-      } else {
-        renderStatic(current);
-        animating = false;
-        if (queued !== null) {
-          const nxt = queued; queued = null;
-          animateTo(nxt);
-        }
-      }
+      if (t < 1) { requestAnimationFrame(frame); }
+      else { renderStatic(current); animating=false; if(queued!==null){const n=queued;queued=null;animateTo(n);} }
     }
     requestAnimationFrame(frame);
   }
 
   function animateTo(next) {
-    if (animating) { queued = next; return; }
-    const prev = current;
-    current = next;
-    runAnim(prev, next);
+    if (animating) { queued=next; return; }
+    const prev=current; current=next; runAnim(prev,next);
   }
-
-  return {
-    el: canvas,
-    set(ch) { if (ch !== current) animateTo(ch); }
-  };
+  return { el:canvas, set(ch){ if(ch!==current) animateTo(ch); } };
 }
 
 function makeSep(ch) {
   const s = document.createElement('span');
-  s.className = 'sep';
-  s.textContent = ch;
-  return s;
+  s.className = 'sep'; s.textContent = ch; return s;
 }
 
 function buildBoard(id, groups, seps) {
-  const board = document.getElementById(id);
-  const flaps = [];
+  const board = document.getElementById(id), flaps = [];
   groups.forEach((len, gi) => {
-    for (let i = 0; i < len; i++) {
-      const f = makeFlap('0');
-      board.appendChild(f.el);
-      flaps.push(f);
-    }
-    if (gi < groups.length - 1) board.appendChild(makeSep(seps[gi]));
+    for (let i=0; i<len; i++) { const f=makeFlap('0'); board.appendChild(f.el); flaps.push(f); }
+    if (gi < groups.length-1) board.appendChild(makeSep(seps[gi]));
   });
   return flaps;
 }
 
 function initClock() {
-  const df = buildBoard('date-board', [2, 2, 4], ['/', '/']);
-  const tf = buildBoard('time-board', [2, 2, 2], [':', ':']);
-
+  const df = buildBoard('date-board', [2,2,4], ['/','/']);
+  const tf = buildBoard('time-board', [2,2,2], [':',':']);
   function tick() {
     const n = new Date();
-    const s =
-      String(n.getDate()).padStart(2, '0') +
-      String(n.getMonth() + 1).padStart(2, '0') +
-      String(n.getFullYear()) +
-      String(n.getHours()).padStart(2, '0') +
-      String(n.getMinutes()).padStart(2, '0') +
-      String(n.getSeconds()).padStart(2, '0');
-    df.forEach((f, i) => f.set(s[i]));
-    tf.forEach((f, i) => f.set(s[8 + i]));
+    const s = String(n.getDate()).padStart(2,'0') + String(n.getMonth()+1).padStart(2,'0') +
+              String(n.getFullYear()) + String(n.getHours()).padStart(2,'0') +
+              String(n.getMinutes()).padStart(2,'0') + String(n.getSeconds()).padStart(2,'0');
+    df.forEach((f,i) => f.set(s[i]));
+    tf.forEach((f,i) => f.set(s[8+i]));
   }
-  tick();
-  setInterval(tick, 1000);
+  tick(); setInterval(tick, 1000);
 }
 
-// ── Search ───────────────────────────────────────────────────────
-document.getElementById('search').addEventListener('keydown', function (e) {
+// ── Search ────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     const q = encodeURIComponent(this.value);
     if (q) window.location.href = `https://www.google.com/search?q=${q}`;
